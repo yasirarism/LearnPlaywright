@@ -25,6 +25,7 @@ async def scrape(url):
             # parsed_url = urlparse(url)
             # await page.goto(f"{parsed_url.scheme}://{parsed_url.netloc}{res}")
             print(await page.content())
+            print(page.url())
 
         except Exception as e:
             print(f"Error scraping {url}: {e}")
