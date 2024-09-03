@@ -25,8 +25,8 @@ async def scrape(url):
 # Define the main function to handle multiple URLs
 async def main():
     urls = [
-        "https://google.com",
-        "https://yasirpedia.eu.org",
+        "https://dood.li/d/3trsd35zs445",
+        "https://dood.li/d/ec9hwdrqpfoi",
     ]
 
     # Create a list of tasks for each URL
