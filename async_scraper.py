@@ -19,11 +19,12 @@ async def scrape(url):
             await page.wait_for_selector("a[href='#download_now']")
             # Click the button
             await page.click("a[href='#download_now']")
-            # Optionally wait for some action after the click
-            # await page.wait_for_timeout(6000)
-            res = await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href")
-            parsed_url = urlparse(url)
-            await page.goto(f"{parsed_url.scheme}://{parsed_url.netloc}{res}")
+            await page.wait_for_selector("small.___siz_fol.d-block")
+            await page.click("small.___siz_fol.d-block")
+            await page.wait_for_timeout(3000)
+            # res = await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href")
+            # parsed_url = urlparse(url)
+            # await page.goto(f"{parsed_url.scheme}://{parsed_url.netloc}{res}")
             print(await page.content())
 
         except Exception as e:
