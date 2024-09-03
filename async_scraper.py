@@ -13,9 +13,9 @@ async def scrape(url):
             await page.goto(url)
 
             # Wait for the element to be present and extract text
-            await page.wait_for_selector('h1')
-            title = await page.locator('h1').text_content()
-            print(f"Title: {title} from {url}")
+            # await page.wait_for_selector('h1')
+            # title = await page.locator('h1').text_content()
+            print(page.content())
 
         except Exception as e:
             print(f"Error scraping {url}: {e}")
