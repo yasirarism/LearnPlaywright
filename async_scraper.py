@@ -21,7 +21,7 @@ async def scrape(url):
             await page.click("a[href='#download_now']")
             # Optionally wait for some action after the click
             # await page.wait_for_timeout(6000)
-            res = await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href"))
+            res = await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href")
             parsed_url = urlparse(page.url())
             await page.goto(f"{parsed_url.scheme}://{parsed_url.netloc}{res}")
             print(await page.content())
