@@ -15,6 +15,11 @@ async def scrape(url):
             # Wait for the element to be present and extract text
             # await page.wait_for_selector('h1')
             # title = await page.locator('h1').text_content()
+            await page.wait_for_selector(button_selector)
+            # Click the button
+            await page.click(button_selector)
+            # Optionally wait for some action after the click
+            await page.wait_for_timeout(6000) 
             print(await page.content())
 
         except Exception as e:
