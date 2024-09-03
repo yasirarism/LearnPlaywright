@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Install Playwright and its dependencies
-RUN pip install playwright
+RUN pip install playwright beautifulsoup4
 
 # Install Playwright browsers
 RUN playwright install --with-deps
