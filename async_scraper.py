@@ -19,9 +19,12 @@ async def scrape(url):
             # Click the button
             await page.click("a[href='#download_now']")
             # Optionally wait for some action after the click
-            await page.wait_for_timeout(6000)
-            print(await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href"))
+            # await page.wait_for_timeout(6000)
+            await page.wait_for_selector("small.___siz_fol.d-block")
+            await page.click("small.___siz_fol.d-block")
             print(await page.content())
+            # print(await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href"))
+            # print(await page.content())
 
         except Exception as e:
             print(f"Error scraping {url}: {e}")
