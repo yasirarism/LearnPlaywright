@@ -1,4 +1,5 @@
 import asyncio
+from urllib.parse import urlparse
 from playwright.async_api import async_playwright
 
 # Define a function to scrape data asynchronously using Playwright
@@ -20,11 +21,10 @@ async def scrape(url):
             await page.click("a[href='#download_now']")
             # Optionally wait for some action after the click
             # await page.wait_for_timeout(6000)
-            await page.wait_for_selector("small.___siz_fol.d-block")
-            await page.click("small.___siz_fol.d-block")
+            res = await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href"))
+            parsed_url = urlparse(page.url())
+            await page.goto(f"{parsed_url.scheme}://{parsed_url.netloc}{res}")
             print(await page.content())
-            # print(await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href"))
-            # print(await page.content())
 
         except Exception as e:
             print(f"Error scraping {url}: {e}")
