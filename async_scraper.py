@@ -58,6 +58,8 @@ async def scrape_dood(url):
 
 @app.get("/dood", summary="Scrape DDL From Dood", tags=["Drama & Film"])
 async def scrape_dood(url: Union[str, None]):
+    if not url:
+        raise HTTPException(status_code=404, detail="Missing url")
     res = await scrape_dood(url)
     if not res:
         raise HTTPException(status_code=404, detail="Element not found or href attribute missing.")
