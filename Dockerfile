@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Install Playwright and its dependencies
-RUN pip install playwright beautifulsoup4
+RUN pip install -r requirements.txt
 
 # Install Playwright browsers
 RUN playwright install --with-deps
@@ -44,4 +44,4 @@ RUN playwright install --with-deps
 COPY . .
 
 # Set entry point
-ENTRYPOINT ["python", "async_scraper.py"]
+CMD ["python3", "runapi.py"]
