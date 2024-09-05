@@ -1,3 +1,4 @@
 fastapi
 playwright
 beautifulsoup4
+uvicorn
