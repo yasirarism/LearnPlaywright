@@ -28,7 +28,7 @@ async def scrape_dood(url: Union[str, None]):
         raise HTTPException(status_code=404, detail="Missing url")
     async with async_playwright() as p:
         # Launch a headless browser
-        browser = await p.firefox.launch(headless=False)
+        browser = await p.firefox.launch(headless=True)
         page = await browser.new_page(java_script_enabled=True)
         domain = urlparse(url)
         title = f"{domain.scheme}://{domain.netloc}"
