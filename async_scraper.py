@@ -44,6 +44,7 @@ async def scrape_dood(url: Union[str, None]):
             # await page.wait_for_timeout(6000)
             # await page.click("small.___siz_fol.d-block")
             res = await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href")
+            return {"status": True, "name": name, "url": ddl, "msg": "heee"}
             await page.goto(domain.scheme + "://" + domain.netloc + str(res), timeout=60000, wait_until='domcontentloaded')
             ddl = await page.locator('a.btn.btn-primary').get_attribute('href')
             await browser.close()
