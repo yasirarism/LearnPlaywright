@@ -2,6 +2,7 @@ import asyncio
 from urllib.parse import urlparse, unquote
 from playwright.async_api import async_playwright
 from fastapi import FastAPI, HTTPException
+from typing import Union, Tuple
 
 app = FastAPI(
     title="YasirPedia Api",
