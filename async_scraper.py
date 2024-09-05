@@ -31,6 +31,7 @@ async def scrape_dood(url: Union[str, None]):
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page(java_script_enabled=True)
         domain = urlparse(url)
+        title = f"{domain.scheme}://{domain.netloc}"
         try:
             # Navigate to the URL
             await page.goto(url, timeout=60000, wait_until='domcontentloaded')
@@ -44,8 +45,7 @@ async def scrape_dood(url: Union[str, None]):
             # await page.wait_for_timeout(6000)
             # await page.click("small.___siz_fol.d-block")
             res = await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href")
-            return {"tes": res}
-            await page.goto(domain.scheme + "://" + domain.netloc + str(res), timeout=60000, wait_until='domcontentloaded')
+            await page.goto(title+res, timeout=60000, wait_until='domcontentloaded')
             ddl = await page.locator('a.btn.btn-primary').get_attribute('href')
             await browser.close()
             if ddl is None:
