@@ -28,7 +28,6 @@ async def scrape_dood(url):
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page(java_script_enabled=True)
         domain = urlparse(url)
-        title = f"{domain.scheme}://{domain.netloc}"
         try:
             # Navigate to the URL
             await page.goto(url, timeout=60000, wait_until='domcontentloaded')
@@ -42,7 +41,7 @@ async def scrape_dood(url):
             # await page.wait_for_timeout(6000)
             # await page.click("small.___siz_fol.d-block")
             res = await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href")
-            await page.goto(domain+str(res), timeout=60000, wait_until='domcontentloaded')
+            await page.goto(domain.scheme + "://" + domain.netloc + str(res), timeout=60000, wait_until='domcontentloaded')
             ddl = await page.locator('a.btn.btn-primary').get_attribute('href')
             await browser.close()
             if ddl is None:
@@ -54,13 +53,14 @@ async def scrape_dood(url):
             # print(await page.content())
         except Exception as e:
             print(f"Error scraping {url}: {e}")
+            await browser.close()
             return False, None, None
 
 @app.get("/dood", summary="Scrape DDL From Dood", tags=["Drama & Film"])
 async def scrape_dood(url: Union[str, None]):
     if not url:
         raise HTTPException(status_code=404, detail="Missing url")
-    res = await scrape_dood(url)
+    status, ddl, name = await scrape_dood(url)
     if not res:
         raise HTTPException(status_code=404, detail="Element not found or href attribute missing.")
-    return {"status": True, "name": res[1], "url": res[0], "msg": "heee"}
+    return {"status": status, "name": name, "url": ddl, "msg": "heee"}
