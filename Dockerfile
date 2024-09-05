@@ -34,14 +34,14 @@ RUN apt-get update && apt-get install -y \
 # Set the working directory
 WORKDIR /app
 
+# Copy the rest of the application code
+COPY . .
+
 # Install Playwright and its dependencies
 RUN pip install -r requirements.txt
 
 # Install Playwright browsers
 RUN playwright install --with-deps
-
-# Copy the rest of the application code
-COPY . .
 
 # Set entry point
 CMD ["python3", "runapi.py"]
