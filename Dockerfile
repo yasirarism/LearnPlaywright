@@ -41,7 +41,7 @@ COPY . .
 RUN pip install -r requirements.txt
 
 # Install Playwright browsers
-RUN playwright install chromium --with-deps
+RUN playwright install firefox --with-deps
 
 # Set entry point
 CMD ["python3", "runapi.py"]
