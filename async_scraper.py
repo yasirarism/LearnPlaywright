@@ -22,7 +22,10 @@ app = FastAPI(
     redoc_url="/redocs",
 )
 
-async def scrape_dood(url):
+@app.get("/dood", summary="Scrape DDL From Dood", tags=["Drama & Film"])
+async def scrape_dood(url: Union[str, None]):
+    if not url:
+        raise HTTPException(status_code=404, detail="Missing url")
     async with async_playwright() as p:
         # Launch a headless browser
         browser = await p.chromium.launch(headless=True)
@@ -47,20 +50,12 @@ async def scrape_dood(url):
             if ddl is None:
                 return False, None, None
             name = unquote(urlparse(ddl).path.split("/")[-1])
-            return True, ddl, name
+            return {"status": True, "name": name, "url": ddl, "msg": "heee"}
             # parsed_url = urlparse(url)
             # await page.goto(f"{parsed_url.scheme}://{parsed_url.netloc}{res}")
             # print(await page.content())
         except Exception as e:
             print(f"Error scraping {url}: {e}")
             await browser.close()
-            return False, None, None
-
-@app.get("/dood", summary="Scrape DDL From Dood", tags=["Drama & Film"])
-async def scrape_dood(url: Union[str, None]):
-    if not url:
-        raise HTTPException(status_code=404, detail="Missing url")
-    status, ddl, name = await scrape_dood(url)
-    if not res:
-        raise HTTPException(status_code=404, detail="Element not found or href attribute missing.")
-    return {"status": status, "name": name, "url": ddl, "msg": "heee"}
+            raise HTTPException(status_code=404, detail="Element not found or href attribute missing.")
+    
