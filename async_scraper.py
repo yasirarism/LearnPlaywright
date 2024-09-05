@@ -2,6 +2,7 @@ import asyncio
 from urllib.parse import urlparse, unquote
 from playwright.async_api import async_playwright
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
 from typing import Union, Tuple
 
 app = FastAPI(
@@ -46,6 +47,7 @@ async def scrape_dood(url: Union[str, None]):
             # await page.click("small.___siz_fol.d-block")
             res = await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href")
             await page.goto(title+res, timeout=100000, wait_until="load", referer=title+res)
+            return HTMLResponse(content=await page.content())
             ddl = await page.locator('a.btn.btn-primary').get_attribute('href')
             await browser.close()
             if ddl is None:
