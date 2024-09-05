@@ -48,7 +48,7 @@ async def scrape_dood(url: Union[str, None]):
             ddl = await page.locator('a.btn.btn-primary').get_attribute('href')
             await browser.close()
             if ddl is None:
-                return False, None, None
+                raise HTTPException(status_code=404, detail="Element not found or href attribute missing.")
             name = unquote(urlparse(ddl).path.split("/")[-1])
             return {"status": True, "name": name, "url": ddl, "msg": "heee"}
             # parsed_url = urlparse(url)
