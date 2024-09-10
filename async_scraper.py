@@ -1,6 +1,7 @@
 import asyncio
 from urllib.parse import urlparse, unquote
 from playwright.async_api import async_playwright
+from playwright_stealth import stealth_async
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from typing import Union, Tuple
@@ -31,6 +32,7 @@ async def scrape_dood(url: Union[str, None]):
         # Launch a headless browser
         browser = await p.firefox.launch(headless=True)
         page = await browser.new_page(java_script_enabled=True)
+        await stealth_async(page)
         domain = urlparse(url)
         title = f"{domain.scheme}://{domain.netloc}"
         try:
