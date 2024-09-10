@@ -42,7 +42,6 @@ RUN pip install -r requirements.txt
 
 # Install Playwright browsers
 RUN playwright install firefox --with-deps
-RUN playwright install playwright-stealth
 
 # Set entry point
 CMD ["python3", "runapi.py"]
