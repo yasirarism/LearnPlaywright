@@ -25,7 +25,7 @@ app = FastAPI(
 )
 
 @app.get("/dood", summary="Scrape DDL From Dood", tags=["Drama & Film"])
-async def scrape_dood(url: Union[str, "https://buzzheavier.com/f/GYseglArMAA"]):
+async def scrape_dood(url: Union[str, None]):
     if not url:
         raise HTTPException(status_code=404, detail="Missing url")
     async with async_playwright() as p:
