@@ -23,7 +23,7 @@ RUN CHROME_DRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_R
     unzip /tmp/chromedriver.zip -d /usr/local/bin/
 
 # Install selenium
-RUN pip install selenium
+RUN pip install -r requirements.txt
 
 # Set environment variable for Chrome binary location
 ENV CHROME_BIN=/usr/bin/google-chrome
@@ -32,4 +32,4 @@ ENV CHROME_BIN=/usr/bin/google-chrome
 ENV CHROMEDRIVER=/usr/local/bin/chromedriver
 
 # Add a simple script or app to run (if needed)
-# Example: CMD ["python3", "your_selenium_script.py"]
+CMD ["python3", "runapi.py"]
