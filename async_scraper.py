@@ -29,7 +29,7 @@ async def scrape_dood(url: Union[str, None]):
     if not url:
         raise HTTPException(status_code=404, detail="Missing url")
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)  # Use chromium or the browser of choice
+        browser = await p.firefox.launch(headless=True)  # Use chromium or the browser of choice
         page = await browser.new_page()
         await page.goto(url)
         await asyncio.sleep(0.5)
