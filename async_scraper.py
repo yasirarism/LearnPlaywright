@@ -30,7 +30,6 @@ async def scrape_dood(url: Union[str, None]):
     if not url:
         raise HTTPException(status_code=404, detail="Missing url")
     options = webdriver.ChromeOptions()
-    options.binary_location = "/usr/bin/google-chrome"
     options.add_argument("--headless=new")
 
     async with webdriver.Chrome(options=options) as driver:
