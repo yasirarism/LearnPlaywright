@@ -3,6 +3,9 @@ from urllib.parse import urlparse, unquote
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from typing import Union, Tuple
+from selenium_driverless import webdriver
+from selenium_driverless.types.by import By
+from selenium_driverless.types.webelement import NoSuchElementException
 
 app = FastAPI(
     title="YasirPedia Api",
