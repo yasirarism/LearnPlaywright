@@ -1,47 +1,35 @@
-# Use the official Python image with the version you need
-FROM python:3.11-slim
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Install required packages and dependencies for Playwright
+# Install Chrome and ChromeDriver
 RUN apt-get update && apt-get install -y \
     wget \
-    curl \
+    gnupg2 \
     unzip \
-    xvfb \
-    libnss3 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libcups2 \
-    libxcomposite1 \
-    libxrandr2 \
-    libxdamage1 \
-    libxkbcommon0 \
-    libpango-1.0-0 \
-    libxshmfence1 \
-    libnss3 \
-    libxcomposite1 \
-    libasound2 \
-    libpangocairo-1.0-0 \
-    libgtk-3-0 \
-    libgbm-dev \
-    # Cleanup
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    xvfb
 
-# Set the working directory
-WORKDIR /app
+# Add Google Chrome’s signing key
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
 
-# Copy the rest of the application code
-COPY . .
+# Set up the Chrome repository
+RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
 
-# Install Playwright and its dependencies
-RUN pip install -r requirements.txt
+# Install Google Chrome
+RUN apt-get update && apt-get install -y google-chrome-stable
 
-# Install Playwright browsers
-RUN playwright install firefox --with-deps
+# Install ChromeDriver
+RUN CHROME_DRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE` && \
+    wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip && \
+    unzip /tmp/chromedriver.zip -d /usr/local/bin/
 
-# Set entry point
-CMD ["python3", "runapi.py"]
+# Install selenium
+RUN pip install selenium
+
+# Set environment variable for Chrome binary location
+ENV CHROME_BIN=/usr/bin/google-chrome
+
+# Set environment variable for ChromeDriver location
+ENV CHROMEDRIVER=/usr/local/bin/chromedriver
+
+# Add a simple script or app to run (if needed)
+# Example: CMD ["python3", "your_selenium_script.py"]
