@@ -25,42 +25,54 @@ app = FastAPI(
 )
 
 @app.get("/dood", summary="Scrape DDL From Dood", tags=["Drama & Film"])
-async def scrape_dood(url: Union[str, None]):
+async def scrape_dood(url: Union[str, "https://buzzheavier.com/f/GYseglArMAA"]):
     if not url:
         raise HTTPException(status_code=404, detail="Missing url")
     async with async_playwright() as p:
-        # Launch a headless browser
-        browser = await p.firefox.launch(headless=True)
-        page = await browser.new_page(java_script_enabled=True)
-        await stealth_async(page)
-        domain = urlparse(url)
-        title = f"{domain.scheme}://{domain.netloc}"
-        try:
-            # Navigate to the URL
-            await page.goto(url, timeout=60000, wait_until='domcontentloaded')
+        browser = await p.chromium.launch(headless=True)  # Use chromium or the browser of choice
+        page = await browser.new_page()
+        await page.goto(url)
+        await asyncio.sleep(0.5)
 
-            # Wait for the element to be present and extract text
-            # await page.wait_for_selector('h1')
-            # title = await page.locator('h1').text_content()
-            await page.wait_for_selector("a[href='#download_now']")
-            # Click the button
-            # await page.click("a[href='#download_now']")
-            # await page.wait_for_timeout(6000)
-            # await page.click("small.___siz_fol.d-block")
-            res = await page.get_attribute("a.btn.btn-primary.d-flex.align-items-center.justify-content-between", "href")
-            await page.goto(title+res, timeout=100000, wait_until="load", referer=title+res)
-            return HTMLResponse(content=await page.content())
-            ddl = await page.locator('a.btn.btn-primary').get_attribute('href')
-            await browser.close()
-            if ddl is None:
-                raise HTTPException(status_code=404, detail="Element not found or href attribute missing.")
-            name = unquote(urlparse(ddl).path.split("/")[-1])
-            return {"status": True, "name": name, "url": ddl, "msg": "heee"}
-            # parsed_url = urlparse(url)
-            # await page.goto(f"{parsed_url.scheme}://{parsed_url.netloc}{res}")
-            # print(await page.content())
-        except Exception as e:
-            print(f"Error scraping {url}: {e}")
-            await browser.close()
-            raise HTTPException(status_code=404, detail="Element not found or href attribute missing.")
+        # Random mouse movements
+        await page.mouse.move(500, 200, steps=60)
+        await page.mouse.move(20, 50, steps=60)
+        await page.mouse.move(8, 45, steps=60)
+        await page.mouse.move(500, 200, steps=60)
+        await page.mouse.move(166, 206, steps=60)
+        await page.mouse.move(200, 205, steps=60)
+
+        # Handle iframes
+        iframe_document = None
+        iframes = page.frames
+        await asyncio.sleep(0.5)
+
+        for iframe in iframes:
+            try:
+                checkbox = await iframe.query_selector(
+                    "#JStsl2 > div > label > input[type=checkbox]"
+                )
+                if checkbox:
+                    await checkbox.click()
+                    await asyncio.sleep(1)
+                    break  # Exit once we find and click the checkbox
+            except PlaywrightTimeoutError:
+                pass
+
+        # Find script with window.open() and extract the URL
+        scripts = await page.locator('script').all()
+        for script in scripts:
+            script_text = await script.text_content()
+            if script_text:
+                match = re.search(r'window\.open\("([^"]+)"\)', script_text)
+                if match:
+                    print(match.group(1))
+                    await browser.close()
+                    return
+        else:
+            print("Captcha failed, retrying")
+            await page.reload()
+            await asyncio.sleep(30)
+
+        await browser.close()
     
