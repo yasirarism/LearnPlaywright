@@ -1,5 +1,5 @@
 fastapi
-playwright
+selenium-driverless
 beautifulsoup4
 uvicorn
 selenium
