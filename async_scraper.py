@@ -1,7 +1,5 @@
 import asyncio, re
 from urllib.parse import urlparse, unquote
-from playwright.async_api import async_playwright
-from playwright_stealth import stealth_async
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from typing import Union, Tuple
@@ -28,51 +26,46 @@ app = FastAPI(
 async def scrape_dood(url: Union[str, None]):
     if not url:
         raise HTTPException(status_code=404, detail="Missing url")
-    async with async_playwright() as p:
-        browser = await p.firefox.launch(headless=True)  # Use chromium or the browser of choice
-        page = await browser.new_page()
-        await page.goto(url)
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless=new")
+
+    async with webdriver.Chrome(options=options) as driver:
+        await driver.get(url, wait_load=True)
         await asyncio.sleep(0.5)
 
-        # Random mouse movements
-        await page.mouse.move(500, 200, steps=60)
-        await page.mouse.move(20, 50, steps=60)
-        await page.mouse.move(8, 45, steps=60)
-        await page.mouse.move(500, 200, steps=60)
-        await page.mouse.move(166, 206, steps=60)
-        await page.mouse.move(200, 205, steps=60)
+        # some random mouse-movements over iframes
+        pointer = driver.current_pointer
+        await pointer.move_to(500, 200, smooth_soft=60, total_time=0.5)
+        await pointer.move_to(20, 50, smooth_soft=60, total_time=0.5)
+        await pointer.move_to(8, 45, smooth_soft=60, total_time=0.5)
+        await pointer.move_to(500, 200, smooth_soft=60, total_time=0.5)
+        await pointer.move_to(166, 206, smooth_soft=60, total_time=0.5)
+        await pointer.move_to(200, 205, smooth_soft=60, total_time=0.5)
 
-        # Handle iframes
+        iframes = await driver.find_elements(By.TAG_NAME, "iframe")
+        await asyncio.sleep(0.5)
+
         iframe_document = None
-        iframes = page.frames
-        await asyncio.sleep(0.5)
-
         for iframe in iframes:
+            # filter out correct iframe document
+            iframe_document = await iframe.content_document
             try:
-                checkbox = await iframe.query_selector(
-                    "#JStsl2 > div > label > input[type=checkbox]"
-                )
-                if checkbox:
-                    await checkbox.click()
-                    await asyncio.sleep(1)
-                    break  # Exit once we find and click the checkbox
-            except PlaywrightTimeoutError:
+                checkbox = await iframe_document.find_element(By.CSS_SELECTOR,
+                                                              "#JStsl2 > div > label > input[type=checkbox]",
+                                                              timeout=5)
+            except NoSuchElementException:
                 pass
+            else:
+                await checkbox.click(move_to=True)
+                await asyncio.sleep(1)
 
-        # Find script with window.open() and extract the URL
-        scripts = await page.locator('script').all()
+        scripts = await driver.find_elements(By.TAG_NAME, 'script')
         for script in scripts:
-            script_text = await script.text_content()
-            if script_text:
-                match = re.search(r'window\.open\("([^"]+)"\)', script_text)
-                if match:
-                    print(match.group(1))
-                    await browser.close()
-                    return
+            script_text = await script.get_attribute('textContent')
+            match = re.search(r'window\.open\("([^"]+)"\)', script_text)
+            if match:
+                return match.group(1)
         else:
             print("Captcha failed, retrying")
-            await page.reload()
+            await driver.refresh()
             await asyncio.sleep(30)
-
-        await browser.close()
-    
