@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-import time
+import time, logging
 from urllib.parse import urlparse
 
 app = Flask(__name__)
@@ -48,6 +48,7 @@ def get_video_url():
             video_element = driver.find_element(By.XPATH, "//video")
             video_url = video_element.get_attribute("src")
         except Exception as e:
+            logging.error(f"1, {e}")
             return jsonify({"error": "Video URL not found", "message": str(e)}), 404
 
         video_title = driver.title
@@ -60,9 +61,11 @@ def get_video_url():
                 "title": video_title
             })
         else:
+            logging.error("2")
             return jsonify({"error": "Video URL not found"}), 404
 
     except Exception as e:
+        logging.error(f"3, {e}")
         return jsonify({"error": "Error fetching the page", "message": str(e)}), 500
 
     finally:
