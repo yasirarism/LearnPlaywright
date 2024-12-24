@@ -3,7 +3,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 import time
 from urllib.parse import urlparse
 
@@ -26,10 +25,13 @@ def get_video_url():
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-
     options.add_argument(f"user-agent=Mozilla/5.0 (Linux; Android 15; Pixel 9 Pro Fold Build/AP3A.241005.015; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/129.0.6668.100 Mobile Safari/537.36")
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    # Use Chromium instead of Chrome
+    options.binary_location = "/usr/bin/chromium"
+
+    # Specify the path to ChromiumDriver
+    driver = webdriver.Chrome(service=Service("/usr/bin/chromium-driver"), options=options)
 
     try:
         driver.execute_cdp_cmd('Network.setExtraHTTPHeaders', {
@@ -68,3 +70,4 @@ def get_video_url():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8081)
+    
