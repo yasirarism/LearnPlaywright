@@ -35,7 +35,7 @@ async def scrape_dood(url: Union[str, None]):
     domain = urlparse(url).netloc
 
     async with async_playwright() as p:
-        browser = await p.firefox.launch(headless=True)  # Launch Chromium in headless mode
+        browser = await p.chromium.launch(headless=True)  # Launch Chromium in headless mode
         context = await browser.new_context()
         # Set custom user-agent and referer headers
         await context.set_extra_http_headers({
