@@ -1,29 +1,25 @@
-# Use an official Python runtime as a parent image
+# Use a Python base image compatible with ARM architecture
 FROM python:3.9-slim
 
-# Install Chrome and ChromeDriver
+# Install necessary packages, including Chromium and ChromiumDriver
 RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg2 \
-    unzip \
-    xvfb
+    chromium \
+    chromium-driver \
+    python3-pip \
+    xvfb \
+    && apt-get clean
 
-# Add Google Chrome’s signing key
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+# Set environment variable for Chromium binary location
+ENV CHROME_BIN=/usr/bin/chromium
 
-# Set up the Chrome repository
-RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+# Set environment variable for ChromiumDriver location
+ENV CHROMEDRIVER_PATH=/usr/bin/chromium-driver
 
-# Install Google Chrome
-RUN apt-get update && apt-get install -y google-chrome-stable
-
+# Copy application code
 COPY . .
 
-# Install selenium
-RUN pip install -r requirements.txt
+# Install Python dependencies
+RUN pip3 install -r requirements.txt
 
-# Set environment variable for Chrome binary location
-ENV CHROME_BIN=/usr/bin/google-chrome
-
-# Add a simple script or app to run (if needed)
+# Command to run your application
 CMD ["python3", "runapi.py"]
