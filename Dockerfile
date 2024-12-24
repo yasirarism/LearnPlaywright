@@ -44,4 +44,4 @@ RUN pip install -r requirements.txt
 RUN playwright install chromium --with-deps
 
 # Set entry point
-CMD ["python3", "runapi.py"]
+CMD ["python3", "async_scraper.py"]
