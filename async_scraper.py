@@ -8,6 +8,10 @@ from urllib.parse import urlparse
 
 app = Flask(__name__)
 
+@app.get("/")
+def halo():
+    return jsonify({"message": "Haloo"})
+
 @app.route('/dood', methods=['GET'])
 def get_video_url():
     # Get the URL parameter from the request
