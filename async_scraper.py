@@ -61,7 +61,9 @@ def get_video_url():
         video_url = None
         try:
             all_elements = driver.find_elements(By.XPATH, "//*")
-            LOGGER.info(all_elements)
+            for element in all_elements:
+                src = element.get_attribute('src')
+                LOGGER.info(src)
             video_element = driver.find_element(By.XPATH, "//video")
             video_url = video_element.get_attribute("src")
         except Exception as e:
