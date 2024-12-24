@@ -3,6 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time, logging
 from urllib.parse import urlparse
 
@@ -49,7 +51,9 @@ def get_video_url():
 
         video_url = None
         try:
-            video_element = driver.find_element(By.XPATH, "//video")
+            video_element = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.XPATH, "//video"))
+            )
             video_url = video_element.get_attribute("src")
         except Exception as e:
             logging.error(f"1, {e}")
