@@ -56,6 +56,7 @@ def get_video_url():
         })
 
         driver.get(dood_url)
+        LOGGER.info(driver.get_text())
         time.sleep(5)
    
         video_url = None
