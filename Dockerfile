@@ -4,16 +4,17 @@ FROM python:3.9-slim
 # Install necessary packages, including Chromium and ChromiumDriver
 RUN apt-get update && apt-get install -y \
     chromium \
-    chromium-chromedriver \
     python3-pip \
     xvfb \
     && apt-get clean
+
+RUN apt-get update && apt install chromium-driver -y
 
 # Set environment variable for Chromium binary location
 ENV CHROME_BIN=/usr/bin/chromium
 
 # Set environment variable for ChromiumDriver location
-ENV CHROMEDRIVER_PATH=/usr/bin/chromium-driver
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
 # Copy application code
 COPY . .
@@ -22,7 +23,7 @@ COPY . .
 RUN pip3 install -r requirements.txt
 
 RUN which chromium && chromium --version
-RUN which chromium-driver && chromium-driver --version
+RUN which chromiumdriver && chromium-driver --version
 
 # Command to run your application
 # CMD ["python3", "runapi.py"]
