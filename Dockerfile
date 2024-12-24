@@ -23,7 +23,7 @@ COPY . .
 RUN pip3 install -r requirements.txt
 
 RUN which chromium && chromium --version
-RUN which chromiumdriver && chromium-driver --version
+RUN which chromedriver && chromedriver --version
 
 # Command to run your application
 # CMD ["python3", "runapi.py"]
