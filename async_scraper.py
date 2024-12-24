@@ -47,7 +47,7 @@ def get_video_url():
         })
 
         driver.get(dood_url)
-        time.sleep(15)
+        time.sleep(5)
 
         video_url = None
         try:
