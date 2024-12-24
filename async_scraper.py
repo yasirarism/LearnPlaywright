@@ -1,74 +1,70 @@
-import asyncio, re
-from urllib.parse import urlparse, unquote
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
-from typing import Union, Tuple
-from selenium_driverless import webdriver
-from selenium_driverless.types.by import By
-from selenium_driverless.types.webelement import NoSuchElementException
+from flask import Flask, request, jsonify
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+import time
+from urllib.parse import urlparse
 
-app = FastAPI(
-    title="YasirPedia Api",
-    description="Useful Rest Api Build Using FastAPI By YasirPedia 🚀",
-    version="0.2.0",
-    contact={
-        "name": "Yasir Aris M",
-        "url": "https://github.com/YasirArisM",
-        "email": "yasiramunandar@gmail.com",
-    },
-    license_info={
-        "name": "Apache 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
-    },
-    docs_url="/docs",
-    openapi_url="/openapi.json",
-    redoc_url="/redocs",
-)
+app = Flask(__name__)
 
-@app.get("/dood", summary="Scrape DDL From Dood", tags=["Drama & Film"])
-async def scrape_dood(url: Union[str, None]):
-    if not url:
-        raise HTTPException(status_code=404, detail="Missing url")
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless=new")
+@app.route('/dood', methods=['GET'])
+def get_video_url():
+    # Get the URL parameter from the request
+    dood_url = request.args.get('url')
 
-    async with webdriver.Chrome(options=options) as driver:
-        await driver.get(url, wait_load=True)
-        await asyncio.sleep(0.5)
+    if not dood_url:
+        return jsonify({"error": "URL parameter is required"}), 400
 
-        # some random mouse-movements over iframes
-        pointer = driver.current_pointer
-        await pointer.move_to(500, 200, smooth_soft=60, total_time=0.5)
-        await pointer.move_to(20, 50, smooth_soft=60, total_time=0.5)
-        await pointer.move_to(8, 45, smooth_soft=60, total_time=0.5)
-        await pointer.move_to(500, 200, smooth_soft=60, total_time=0.5)
-        await pointer.move_to(166, 206, smooth_soft=60, total_time=0.5)
-        await pointer.move_to(200, 205, smooth_soft=60, total_time=0.5)
+    if '/d/' in dood_url:
+        dood_url = dood_url.replace('/d/', '/e/')
 
-        iframes = await driver.find_elements(By.TAG_NAME, "iframe")
-        await asyncio.sleep(0.5)
+    domain = urlparse(dood_url).netloc
 
-        iframe_document = None
-        for iframe in iframes:
-            # filter out correct iframe document
-            iframe_document = await iframe.content_document
-            try:
-                checkbox = await iframe_document.find_element(By.CSS_SELECTOR,
-                                                              "#JStsl2 > div > label > input[type=checkbox]",
-                                                              timeout=5)
-            except NoSuchElementException:
-                pass
-            else:
-                await checkbox.click(move_to=True)
-                await asyncio.sleep(1)
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
 
-        scripts = await driver.find_elements(By.TAG_NAME, 'script')
-        for script in scripts:
-            script_text = await script.get_attribute('textContent')
-            match = re.search(r'window\.open\("([^"]+)"\)', script_text)
-            if match:
-                return match.group(1)
+    options.add_argument(f"user-agent=Mozilla/5.0 (Linux; Android 15; Pixel 9 Pro Fold Build/AP3A.241005.015; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/129.0.6668.100 Mobile Safari/537.36")
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+    try:
+        driver.execute_cdp_cmd('Network.setExtraHTTPHeaders', {
+            'headers': {
+                'Referer': f'https://{domain}/'
+            }
+        })
+
+        driver.get(dood_url)
+        time.sleep(5)
+
+        video_url = None
+        try:
+            video_element = driver.find_element(By.XPATH, "//video")
+            video_url = video_element.get_attribute("src")
+        except Exception as e:
+            return jsonify({"error": "Video URL not found", "message": str(e)}), 404
+
+        video_title = driver.title
+
+        if video_url:
+            return jsonify({
+                "success": True,
+                "video_url": video_url,
+                "referer": domain,
+                "title": video_title
+            })
         else:
-            print("Captcha failed, retrying")
-            await driver.refresh()
-            await asyncio.sleep(30)
+            return jsonify({"error": "Video URL not found"}), 404
+
+    except Exception as e:
+        return jsonify({"error": "Error fetching the page", "message": str(e)}), 500
+
+    finally:
+        driver.quit()  # Close the driver
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8081)
