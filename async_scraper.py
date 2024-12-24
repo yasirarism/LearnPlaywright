@@ -48,9 +48,11 @@ def get_video_url():
 
         driver.get(dood_url)
         time.sleep(5)
-
+   
         video_url = None
         try:
+            all_elements = driver.find_elements(By.XPATH, "//*")
+            print(all_elements)
             video_element = driver.find_element(By.XPATH, "//video")
             video_url = video_element.get_attribute("src")
         except Exception as e:
