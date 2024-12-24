@@ -21,6 +21,9 @@ COPY . .
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
 
+RUN which chromium && chromium --version
+RUN which chromium-driver && chromium-driver --version
+
 # Command to run your application
 # CMD ["python3", "runapi.py"]
 CMD ["python3", "async_scraper.py"]
