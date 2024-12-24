@@ -22,4 +22,5 @@ COPY . .
 RUN pip3 install -r requirements.txt
 
 # Command to run your application
-CMD ["python3", "runapi.py"]
+# CMD ["python3", "runapi.py"]
+CMD ["python3", "async_scraper.py"]
