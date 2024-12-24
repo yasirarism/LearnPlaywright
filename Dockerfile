@@ -1,29 +1,47 @@
-# Use a Python base image compatible with ARM architecture
-FROM python:3.9-slim
+# Use the official Python image with the version you need
+FROM python:3.11-slim
 
-# Install necessary packages, including Chromium and ChromiumDriver
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install required packages and dependencies for Playwright
 RUN apt-get update && apt-get install -y \
-    chromium \
-    chromium-driver \
-    python3-pip \
+    wget \
+    curl \
+    unzip \
     xvfb \
-    && apt-get clean
+    libnss3 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libxcomposite1 \
+    libxrandr2 \
+    libxdamage1 \
+    libxkbcommon0 \
+    libpango-1.0-0 \
+    libxshmfence1 \
+    libnss3 \
+    libxcomposite1 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libgtk-3-0 \
+    libgbm-dev \
+    # Cleanup
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set environment variable for Chromium binary location
-ENV CHROME_BIN=/usr/bin/chromium
+# Set the working directory
+WORKDIR /app
 
-# Set environment variable for ChromiumDriver location
-ENV CHROMEDRIVER_PATH=/usr/bin/chromium-driver
-
-# Copy application code
+# Copy the rest of the application code
 COPY . .
 
-# Install Python dependencies
-RUN pip3 install -r requirements.txt
+# Install Playwright and its dependencies
+RUN pip install -r requirements.txt
 
-RUN which chromium && chromium --version
-RUN which chromium-driver && chromium-driver --version
+# Install Playwright browsers
+RUN playwright install chromium --with-deps
 
-# Command to run your application
-# CMD ["python3", "runapi.py"]
-CMD ["python3", "async_scraper.py"]
+# Set entry point
+CMD ["python3", "runapi.py"]
