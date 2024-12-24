@@ -2,7 +2,7 @@ import asyncio, re
 from urllib.parse import urlparse, unquote
 from playwright.async_api import async_playwright
 from playwright_stealth import stealth_async
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from typing import Union, Tuple
 
@@ -25,7 +25,12 @@ app = FastAPI(
 )
 
 @app.get("/dood", summary="Scrape DDL From Dood", tags=["Drama & Film"])
-async def get_video_url(url: str = Query(..., description="The URL to fetch the video from")):
+async def get_dood_url(
+    url: str = Query(..., description="The URL to fetch the video from")  # `...` makes it required
+):
+    if not url:
+        raise HTTPException(status_code=400, detail="URL parameter is required")
+    
     if '/d/' in url:
         url = url.replace('/d/', '/e/')
     
