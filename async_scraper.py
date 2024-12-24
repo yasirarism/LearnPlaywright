@@ -19,6 +19,11 @@ basicConfig(
 
 LOGGER = getLogger(__name__)
 
+def wait_for_page_load(driver):
+    """Wait until the page is fully loaded by checking document.readyState"""
+    wait = WebDriverWait(driver, 30)
+    wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
+
 @app.get("/")
 def halo():
     return jsonify({"message": "Haloo"})
@@ -56,8 +61,9 @@ def get_video_url():
         })
 
         driver.get(dood_url)
-        LOGGER.info(driver.page_source)
-        time.sleep(5)
+        wait_for_page_load(driver)
+        # LOGGER.info(driver.page_source)
+        # time.sleep(5)
    
         video_url = None
         try:
