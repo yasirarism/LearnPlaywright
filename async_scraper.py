@@ -5,10 +5,19 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time, logging
+import time
+from logging import getLogger, FileHandler, StreamHandler, INFO, basicConfig
 from urllib.parse import urlparse
 
 app = Flask(__name__)
+
+basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[FileHandler("log.txt"), StreamHandler()],
+    level=INFO,
+)
+
+LOGGER = getLogger(__name__)
 
 @app.get("/")
 def halo():
@@ -52,11 +61,11 @@ def get_video_url():
         video_url = None
         try:
             all_elements = driver.find_elements(By.XPATH, "//*")
-            print(all_elements)
+            LOGGER.info(all_elements)
             video_element = driver.find_element(By.XPATH, "//video")
             video_url = video_element.get_attribute("src")
         except Exception as e:
-            logging.error(f"1, {e}")
+            LOGGER.error(f"1, {e}")
             return jsonify({"error": "Video URL not found", "message": str(e)}), 404
 
         video_title = driver.title
@@ -69,11 +78,11 @@ def get_video_url():
                 "title": video_title
             })
         else:
-            logging.error("2")
+            LOGGER.error("2")
             return jsonify({"error": "Video URL not found"}), 404
 
     except Exception as e:
-        logging.error(f"3, {e}")
+        LOGGER.error(f"3, {e}")
         return jsonify({"error": "Error fetching the page", "message": str(e)}), 500
 
     finally:
