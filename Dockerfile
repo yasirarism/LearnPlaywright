@@ -35,10 +35,10 @@ COPY . .
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
 
-# Start Cloudflare Warp daemon and configure Warp
+# Start Cloudflare Warp daemon and configure Warp with TOS acceptance
 RUN warp-svc & \
     sleep 5 && \
-    warp-cli registration new --accept-tos && \
+    warp-cli registration --accept-tos new && \
     warp-cli connect && \
     warp-cli enable-always-on
 
