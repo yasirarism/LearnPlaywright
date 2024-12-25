@@ -1,33 +1,20 @@
 # Use a Python base image compatible with ARM architecture
 FROM python:3.9-slim
 
-# Install Chrome browser, Cloudflare Warp CLI, and dependencies
+# Install necessary packages, including Chromium and ChromiumDriver
 RUN apt-get update && apt-get install -y \
-    wget \
-    curl \
-    unzip \
-    gnupg \
-    lsb-release \
-    && curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' \
-    && curl https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - \
-    && echo "deb https://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list \
-    && apt-get update && apt-get install -y \
-    google-chrome-stable \
-    cloudflare-warp \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    chromium \
+    python3-pip \
+    xvfb \
+    && apt-get clean
 
-# Install the appropriate ChromeDriver (x86_64 version)
-RUN wget -q "https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.204/linux64/chromedriver-linux64.zip" \
-    && unzip chromedriver-linux64.zip -d /usr/local/bin \
-    && rm chromedriver-linux64.zip
+RUN apt-get update && apt install chromium-driver -y
 
-# Make sure chromedriver is executable
-RUN chmod +x /usr/local/bin/chromedriver-linux64/chromedriver
+# Set environment variable for Chromium binary location
+ENV CHROME_BIN=/usr/bin/chromium
 
-# Add Chrome and ChromeDriver to PATH
-ENV PATH="/usr/local/chrome-linux-arm64:$PATH"
-ENV PATH="/usr/local/bin/chromedriver-linux64:$PATH"
+# Set environment variable for ChromiumDriver location
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
 # Copy application code
 COPY . .
@@ -35,17 +22,10 @@ COPY . .
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
 
-# Start Cloudflare Warp daemon and configure Warp with TOS acceptance
-RUN warp-svc & \
-    sleep 5 && \
-    warp-cli --accept-tos registration new && \
-    warp-cli --accept-tos connect && \
-    warp-cli enable-always-on
+EXPOSE 8081
 
-# Verify installations
-RUN which google-chrome && google-chrome --version
+RUN which chromium && chromium --version
 RUN which chromedriver && chromedriver --version
-RUN warp-cli status
 
 # Command to run your application
 CMD ["python3", "runapi.py"]
