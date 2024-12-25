@@ -17,6 +17,10 @@ RUN wget -q "https://storage.googleapis.com/chrome-for-testing-public/131.0.6778
     && unzip chromedriver-linux64.zip -d /usr/local/bin \
     && rm chromedriver-linux64.zip
 
+# Add Chrome to PATH
+ENV PATH="/usr/local/chrome-linux-arm64:$PATH"
+ENV PATH="/usr/local/bin:$PATH"
+
 # Copy application code
 COPY . .
 
