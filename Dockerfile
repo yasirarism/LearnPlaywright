@@ -22,6 +22,8 @@ COPY . .
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
 
+EXPOSE 8081
+
 RUN which chromium && chromium --version
 RUN which chromedriver && chromedriver --version
 
