@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install the appropriate ChromeDriver (x86_64 version)
-RUN wget -q "https://chromedriver.storage.googleapis.com/131.0.6778.204/chromedriver_linux64.zip" \
-    && unzip chromedriver_linux64.zip -d /usr/local/bin \
-    && rm chromedriver_linux64.zip
+RUN wget -q "https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.204/linux64/chromedriver-linux64.zip" \
+    && unzip chromedriver-linux64.zip -d /usr/local/bin \
+    && rm chromedriver-linux64.zip
 
 # Make sure chromedriver is executable
 RUN chmod +x /usr/local/bin/chromedriver
