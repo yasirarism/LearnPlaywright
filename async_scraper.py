@@ -50,10 +50,10 @@ def get_video_url():
     options.add_argument(f"user-agent=Mozilla/5.0 (Linux; Android 15; Pixel 9 Pro Fold Build/AP3A.241005.015; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/129.0.6668.100 Mobile Safari/537.36")
 
     # Use Chromium instead of Chrome
-    options.binary_location = "/usr/bin/google-chrome"
+    options.binary_location = "/usr/bin/chromium"
 
     # Specify the path to ChromiumDriver
-    driver = webdriver.Chrome(service=Service("/usr/local/bin/chromedriver-linux64/chromedriver"), options=options)
+    driver = webdriver.Chrome(service=Service("/usr/bin/chromedriver"), options=options)
 
     try:
         driver.execute_cdp_cmd('Network.setExtraHTTPHeaders', {
