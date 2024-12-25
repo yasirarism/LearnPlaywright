@@ -28,5 +28,5 @@ RUN which chromium && chromium --version
 RUN which chromedriver && chromedriver --version
 
 # Command to run your application
-# CMD ["python3", "runapi.py"]
-CMD ["python3", "async_scraper.py"]
+CMD ["python3", "runapi.py"]
+# CMD ["python3", "async_scraper.py"]
