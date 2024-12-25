@@ -22,7 +22,7 @@ RUN chmod +x /usr/local/bin/chromedriver-linux64/chromedriver
 
 # Add Chrome and ChromeDriver to PATH
 ENV PATH="/usr/local/chrome-linux-arm64:$PATH"
-ENV PATH="/usr/local/bin:$PATH"
+ENV PATH="/usr/local/bin/chromedriver-linux64:$PATH"
 
 # Copy application code
 COPY . .
