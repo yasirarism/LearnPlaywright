@@ -52,7 +52,7 @@ def get_video_url():
     # options.binary_location = "/usr/bin/chromium"
 
     # Specify the path to ChromiumDriver
-    driver = webdriver.Chrome(service=Service(options=options))
+    driver = webdriver.Chrome(service=Service("/usr/local/bin/chromedriver-linux64/chromedriver"), options=options)
 
     try:
         driver.execute_cdp_cmd('Network.setExtraHTTPHeaders', {
@@ -62,9 +62,9 @@ def get_video_url():
         })
 
         driver.get(dood_url)
-        wait_for_page_load(driver)
+        # wait_for_page_load(driver)
         # LOGGER.info(driver.page_source)
-        # time.sleep(5)
+        time.sleep(5)
    
         video_url = None
         try:
