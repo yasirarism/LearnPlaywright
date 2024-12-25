@@ -1,5 +1,5 @@
 fastapi
-selenium-driverless
+asgiref
 beautifulsoup4
 uvicorn
 selenium
