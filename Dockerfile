@@ -23,7 +23,7 @@ COPY . .
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
 
-RUN which chromium && chromium --version
+RUN which chrome && chrome --version
 RUN which chromedriver && chromedriver --version
 
 # Command to run your application
