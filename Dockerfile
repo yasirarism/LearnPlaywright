@@ -29,16 +29,18 @@ RUN chmod +x /usr/local/bin/chromedriver-linux64/chromedriver
 ENV PATH="/usr/local/chrome-linux-arm64:$PATH"
 ENV PATH="/usr/local/bin/chromedriver-linux64:$PATH"
 
-# Configure Cloudflare Warp
-RUN warp-cli registration new \
-    && warp-cli connect \
-    && warp-cli enable-always-on
-
 # Copy application code
 COPY . .
 
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
+
+# Start Cloudflare Warp daemon and configure Warp
+RUN warp-svc & \
+    sleep 5 && \
+    warp-cli registration new && \
+    warp-cli connect && \
+    warp-cli enable-always-on
 
 # Verify installations
 RUN which google-chrome && google-chrome --version
