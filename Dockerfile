@@ -30,9 +30,9 @@ ENV PATH="/usr/local/chrome-linux-arm64:$PATH"
 ENV PATH="/usr/local/bin/chromedriver-linux64:$PATH"
 
 # Configure Cloudflare Warp
-RUN warp-cli set-mode warp \
-    && warp-cli register \
-    && warp-cli connect
+RUN warp-cli register \
+    && warp-cli connect \
+    && warp-cli enable-always-on
 
 # Copy application code
 COPY . .
