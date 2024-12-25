@@ -38,8 +38,8 @@ RUN pip3 install -r requirements.txt
 # Start Cloudflare Warp daemon and configure Warp with TOS acceptance
 RUN warp-svc & \
     sleep 5 && \
-    warp-cli registration --accept-tos new && \
-    warp-cli connect && \
+    warp-cli --accept-tos registration new && \
+    warp-cli --accept-tos connect && \
     warp-cli enable-always-on
 
 # Verify installations
