@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from logging import getLogger, FileHandler, StreamHandler, INFO, basicConfig
 from urllib.parse import urlparse
+from asgiref.wsgi import WsgiToAsgi
 
 app = Flask(__name__)
 
@@ -96,3 +97,4 @@ def get_video_url():
 # if __name__ == '__main__':
 #    app.run(host='0.0.0.0', port=8081)
     
+dood_app = WsgiToAsgi(app)
