@@ -18,7 +18,7 @@ RUN wget -q "https://storage.googleapis.com/chrome-for-testing-public/131.0.6778
     && rm chromedriver-linux64.zip
 
 # Make sure chromedriver is executable
-RUN chmod +x /usr/local/bin/chromedriver
+RUN chmod +x /usr/local/bin/chromedriver-linux64/chromedriver
 
 # Add Chrome and ChromeDriver to PATH
 ENV PATH="/usr/local/chrome-linux-arm64:$PATH"
