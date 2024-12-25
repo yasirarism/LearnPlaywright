@@ -12,12 +12,15 @@ RUN apt-get update && apt-get install -y \
     && apt-get update && apt-get install -y google-chrome-stable \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install ChromeDriver
-RUN wget -q "https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.204/linux64/chromedriver-linux64.zip" \
-    && unzip chromedriver-linux64.zip -d /usr/local/bin \
-    && rm chromedriver-linux64.zip
+# Install the appropriate ChromeDriver (x86_64 version)
+RUN wget -q "https://chromedriver.storage.googleapis.com/131.0.6778.204/chromedriver_linux64.zip" \
+    && unzip chromedriver_linux64.zip -d /usr/local/bin \
+    && rm chromedriver_linux64.zip
 
-# Add Chrome to PATH
+# Make sure chromedriver is executable
+RUN chmod +x /usr/local/bin/chromedriver
+
+# Add Chrome and ChromeDriver to PATH
 ENV PATH="/usr/local/chrome-linux-arm64:$PATH"
 ENV PATH="/usr/local/bin:$PATH"
 
