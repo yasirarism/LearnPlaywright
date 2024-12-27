@@ -30,15 +30,15 @@ RUN pip3 install -r requirements.txt
 # Expose port 8081
 EXPOSE 8081
 
-# Install curl for testing
-RUN curl https://www.cloudflare.com/cdn-cgi/trace
-
 # Copy entrypoint script to run Warp and the main application
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Use entrypoint to run Warp and the application
 ENTRYPOINT ["/entrypoint.sh"]
+
+# Install curl for testing
+RUN curl https://www.cloudflare.com/cdn-cgi/trace
 
 # Command to run your application (this will be the default if not specified)
 CMD ["python3", "runapi.py"]
