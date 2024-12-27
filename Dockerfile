@@ -24,7 +24,7 @@ RUN echo '#!/bin/bash \n\
     warp-cli --accept-tos mode warp \n\
     warp-cli --accept-tos connect \n\
     warp-cli --accept-tos status \n\
-    curl https://www.cloudflare.com/cdn-cgi/trace \n
+    curl https://www.cloudflare.com/cdn-cgi/trace \n\
     # Start your Python application \n\
     python3 runapi.py' > /start.sh
 
