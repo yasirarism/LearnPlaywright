@@ -14,9 +14,9 @@ RUN apt-get update && apt install chromium-driver -y
 
 # Install Cloudflare Warp
 RUN curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - && \
-    echo "deb http://pkg.cloudflareclient.com/ focal main" | tee /etc/apt/sources.list.d/cloudflare-client.list && \
+    echo "deb http://pkg.cloudflareclient.com/ focal main" | tee /etc/apt/sources.list.d/cloudflare-client.list
 
-ENV DBUS_SESSION_BUS_ADDRESS="none"
+ENV DBUS_SESSION_BUS_ADDRESS=none
 
 # Enable Cloudflare Warp
 RUN apt-get update && apt-get install -y cloudflare-warp && \
