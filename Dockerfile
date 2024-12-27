@@ -38,6 +38,7 @@ EXPOSE 8081
 
 RUN which chromium && chromium --version
 RUN which chromedriver && chromedriver --version
+RUN curl https://www.cloudflare.com/cdn-cgi/trace
 
 # Command to run your application
 CMD ["python3", "runapi.py"]
