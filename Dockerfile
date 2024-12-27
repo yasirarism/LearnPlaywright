@@ -22,7 +22,8 @@ RUN (warp-svc &) && \
     sleep 2 && \
     warp-cli --accept-tos registration new && \
     warp-cli --accept-tos mode warp && \
-    warp-cli --accept-tos connect
+    warp-cli --accept-tos connect && \
+    warp-cli status
 
 # Set environment variables for Chromium
 ENV CHROME_BIN=/usr/bin/chromium
