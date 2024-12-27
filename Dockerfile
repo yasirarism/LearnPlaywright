@@ -1,3 +1,4 @@
+# Use a Python base image compatible with ARM architecture
 FROM python:3.9-slim
 
 # Install necessary packages, including Chromium, ChromiumDriver, and Cloudflare Warp
@@ -11,25 +12,20 @@ RUN apt-get update && apt-get install -y \
 # Install ChromiumDriver
 RUN apt-get update && apt install chromium-driver -y
 
-# Create a script to start Warp and the Python app
-RUN echo '#!/bin/bash \n\
-    curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - && \
+# Install Cloudflare Warp
+RUN curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - && \
     echo "deb http://pkg.cloudflareclient.com/ focal main" | tee /etc/apt/sources.list.d/cloudflare-client.list && \
-    apt-get update && apt-get install -y cloudflare-warp \n\
-    # Start warp-svc in the background \n\
-    warp-svc & \n\
-    sleep 2 \n\
-    # Run warp-cli commands to connect \n\
-    warp-cli --accept-tos registration new \n\
-    warp-cli --accept-tos mode warp \n\
-    warp-cli --accept-tos connect \n\
-    warp-cli --accept-tos status \n\
-    curl https://www.cloudflare.com/cdn-cgi/trace \n\
-    # Start your Python application \n\
-    python3 runapi.py' > /start.sh
 
-# Make the script executable
-RUN chmod +x /start.sh
+ENV DBUS_SESSION_BUS_ADDRESS="none"
+
+# Enable Cloudflare Warp
+RUN apt-get update && apt-get install -y cloudflare-warp && \
+    (warp-svc &) && \
+    sleep 2 && \
+    warp-cli --accept-tos registration new && \
+    warp-cli --accept-tos mode warp && \
+    warp-cli --accept-tos connect && \
+    warp-cli --accept-tos status
 
 # Set environment variables for Chromium
 ENV CHROME_BIN=/usr/bin/chromium
@@ -45,6 +41,7 @@ EXPOSE 8081
 
 RUN which chromium && chromium --version
 RUN which chromedriver && chromedriver --version
+RUN curl https://www.cloudflare.com/cdn-cgi/trace
 
-# Use the script to start everything
-CMD ["/start.sh"]
+# Command to run your application
+CMD ["python3", "runapi.py"]
