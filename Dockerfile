@@ -11,13 +11,11 @@ RUN apt-get update && apt-get install -y \
 # Install ChromiumDriver
 RUN apt-get update && apt install chromium-driver -y
 
-# Install Cloudflare Warp
-RUN curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - && \
-    echo "deb http://pkg.cloudflareclient.com/ focal main" | tee /etc/apt/sources.list.d/cloudflare-client.list && \
-    apt-get update && apt-get install -y cloudflare-warp
-
 # Create a script to start Warp and the Python app
 RUN echo '#!/bin/bash \n\
+    curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - && \
+    echo "deb http://pkg.cloudflareclient.com/ focal main" | tee /etc/apt/sources.list.d/cloudflare-client.list && \
+    apt-get update && apt-get install -y cloudflare-warp \n\
     # Start warp-svc in the background \n\
     warp-svc & \n\
     sleep 2 \n\
