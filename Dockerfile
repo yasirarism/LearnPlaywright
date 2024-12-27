@@ -17,14 +17,6 @@ RUN curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - && \
     echo "deb http://pkg.cloudflareclient.com/ focal main" | tee /etc/apt/sources.list.d/cloudflare-client.list && \
     apt-get update && apt-get install -y cloudflare-warp
 
-# Enable Cloudflare Warp
-RUN (warp-svc &) && \
-    sleep 2 && \
-    warp-cli --accept-tos registration new && \
-    warp-cli --accept-tos mode warp && \
-    warp-cli --accept-tos connect && \
-    warp-cli --accept-tos status
-
 # Set environment variables for Chromium
 ENV CHROME_BIN=/usr/bin/chromium
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
@@ -35,11 +27,18 @@ COPY . .
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
 
+# Expose port 8081
 EXPOSE 8081
 
-RUN which chromium && chromium --version
-RUN which chromedriver && chromedriver --version
+# Install curl for testing
 RUN curl https://www.cloudflare.com/cdn-cgi/trace
 
-# Command to run your application
+# Copy entrypoint script to run Warp and the main application
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Use entrypoint to run Warp and the application
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Command to run your application (this will be the default if not specified)
 CMD ["python3", "runapi.py"]
