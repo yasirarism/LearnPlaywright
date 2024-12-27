@@ -1,19 +1,28 @@
 # Use a Python base image compatible with ARM architecture
 FROM python:3.9-slim
 
-# Install necessary packages, including Chromium and ChromiumDriver
+# Install necessary packages, including Chromium, ChromiumDriver, and Cloudflare Warp
 RUN apt-get update && apt-get install -y \
     chromium \
     python3-pip \
     xvfb \
+    curl \
     && apt-get clean
 
+# Install ChromiumDriver
 RUN apt-get update && apt install chromium-driver -y
 
-# Set environment variable for Chromium binary location
-ENV CHROME_BIN=/usr/bin/chromium
+# Install Cloudflare Warp
+RUN curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - && \
+    echo "deb http://pkg.cloudflareclient.com/ focal main" | tee /etc/apt/sources.list.d/cloudflare-client.list && \
+    apt-get update && apt-get install -y cloudflare-warp
 
-# Set environment variable for ChromiumDriver location
+# Enable Cloudflare Warp
+RUN warp-cli --accept-tos registration && \
+    warp-cli --accept-tos connect
+
+# Set environment variables for Chromium
+ENV CHROME_BIN=/usr/bin/chromium
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
 # Copy application code
