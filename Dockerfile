@@ -1,4 +1,3 @@
-# Use a Python base image compatible with ARM architecture
 FROM python:3.9-slim
 
 # Install necessary packages, including Chromium, ChromiumDriver, and Cloudflare Warp
@@ -16,20 +15,21 @@ RUN apt-get update && apt install chromium-driver -y
 RUN curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - && \
     echo "deb http://pkg.cloudflareclient.com/ focal main" | tee /etc/apt/sources.list.d/cloudflare-client.list
 
+# Set environment variables
 ENV DBUS_SESSION_BUS_ADDRESS=none
+ENV CHROME_BIN=/usr/bin/chromium
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
-# Enable Cloudflare Warp
-RUN apt-get update && apt-get install -y cloudflare-warp && \
-    (warp-svc &) && \
+# Install Cloudflare Warp
+RUN apt-get update && apt-get install -y cloudflare-warp
+
+# Start warp-svc in the background and check its status
+RUN warp-svc & \
     sleep 2 && \
     warp-cli --accept-tos registration new && \
     warp-cli --accept-tos mode warp && \
     warp-cli --accept-tos connect && \
     warp-cli --accept-tos status
-
-# Set environment variables for Chromium
-ENV CHROME_BIN=/usr/bin/chromium
-ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
 # Copy application code
 COPY . .
@@ -37,11 +37,13 @@ COPY . .
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
 
+# Expose the port the app runs on
 EXPOSE 8081
 
+# Debug: Check Chromium and Cloudflare setup
 RUN which chromium && chromium --version
 RUN which chromedriver && chromedriver --version
 RUN curl https://www.cloudflare.com/cdn-cgi/trace
 
 # Command to run your application
-CMD ["python3", "runapi.py"]
+CMD ["/bin/bash", "-c", "warp-svc & sleep 2 && warp-cli --accept-tos connect && python3 runapi.py"]
