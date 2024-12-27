@@ -18,7 +18,7 @@ RUN curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - && \
     apt-get update && apt-get install -y cloudflare-warp
 
 # Enable Cloudflare Warp
-RUN warp-cli --accept-tos registration && \
+RUN warp-cli --accept-tos registration new && \
     warp-cli --accept-tos connect
 
 # Set environment variables for Chromium
