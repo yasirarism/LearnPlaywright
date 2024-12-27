@@ -24,7 +24,7 @@ ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 RUN apt-get update && apt-get install -y cloudflare-warp
 
 # Start warp-svc in the background and check its status
-RUN warp-svc & \
+RUN warp-svc \
     sleep 2 && \
     warp-cli --accept-tos registration new && \
     warp-cli --accept-tos mode warp && \
