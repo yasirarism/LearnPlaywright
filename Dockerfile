@@ -24,12 +24,12 @@ ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 RUN apt-get update && apt-get install -y cloudflare-warp
 
 # Start warp-svc in the background and check its status
-RUN warp-svc \
-    sleep 2 && \
-    warp-cli --accept-tos registration new && \
-    warp-cli --accept-tos mode warp && \
-    warp-cli --accept-tos connect && \
-    warp-cli --accept-tos status
+# RUN warp-svc \
+#     sleep 2 && \
+#     warp-cli --accept-tos registration new && \
+#     warp-cli --accept-tos mode warp && \
+#     warp-cli --accept-tos connect && \
+#     warp-cli --accept-tos status
 
 # Copy application code
 COPY . .
@@ -46,4 +46,4 @@ RUN which chromedriver && chromedriver --version
 RUN curl https://www.cloudflare.com/cdn-cgi/trace
 
 # Command to run your application
-CMD ["/bin/bash", "-c", "warp-svc & sleep 2 && warp-cli --accept-tos connect && python3 runapi.py"]
+CMD ["/bin/bash", "python3 runapi.py"]
