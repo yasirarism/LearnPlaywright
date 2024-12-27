@@ -1,4 +1,3 @@
-# Use a Python base image compatible with ARM architecture
 FROM python:3.9-slim
 
 # Install necessary packages, including Chromium, ChromiumDriver, and Cloudflare Warp
@@ -7,7 +6,6 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     xvfb \
     curl \
-    dbus \
     && apt-get clean
 
 # Install ChromiumDriver
@@ -17,6 +15,22 @@ RUN apt-get update && apt install chromium-driver -y
 RUN curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - && \
     echo "deb http://pkg.cloudflareclient.com/ focal main" | tee /etc/apt/sources.list.d/cloudflare-client.list && \
     apt-get update && apt-get install -y cloudflare-warp
+
+# Create a script to start Warp and the Python app
+RUN echo '#!/bin/bash \n\
+    # Start warp-svc in the background \n\
+    warp-svc & \n\
+    sleep 2 \n\
+    # Run warp-cli commands to connect \n\
+    warp-cli --accept-tos registration new \n\
+    warp-cli --accept-tos mode warp \n\
+    warp-cli --accept-tos connect \n\
+    warp-cli --accept-tos status \n\
+    # Start your Python application \n\
+    python3 runapi.py' > /start.sh
+
+# Make the script executable
+RUN chmod +x /start.sh
 
 # Set environment variables for Chromium
 ENV CHROME_BIN=/usr/bin/chromium
@@ -28,18 +42,11 @@ COPY . .
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
 
-# Expose port 8081
 EXPOSE 8081
 
-# Copy entrypoint script to run Warp and the main application
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Use entrypoint to run Warp and the application
-ENTRYPOINT ["/entrypoint.sh"]
-
-# Install curl for testing
+RUN which chromium && chromium --version
+RUN which chromedriver && chromedriver --version
 RUN curl https://www.cloudflare.com/cdn-cgi/trace
 
-# Command to run your application (this will be the default if not specified)
-CMD ["python3", "runapi.py"]
+# Use the script to start everything
+CMD ["/start.sh"]
