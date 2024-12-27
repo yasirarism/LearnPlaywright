@@ -21,6 +21,7 @@ RUN curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | apt-key add - && \
 RUN (warp-svc &) && \
     sleep 2 && \
     warp-cli --accept-tos registration new && \
+    warp-cli --accept-tos mode proxy && \
     warp-cli --accept-tos connect
 
 # Set environment variables for Chromium
