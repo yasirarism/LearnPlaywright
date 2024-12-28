@@ -46,4 +46,4 @@ RUN which chromedriver && chromedriver --version
 RUN curl https://www.cloudflare.com/cdn-cgi/trace
 
 # Command to run your application
-CMD ["/bin/bash", "python3 runapi.py"]
+CMD ["python3", "runapi.py"]
